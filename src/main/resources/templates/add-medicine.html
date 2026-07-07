@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Medicine</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
+        body {
+            min-height:100vh; display:flex; align-items:center; justify-content:center;
+            background:linear-gradient(135deg,#6dd5ed,#2193b0); padding:20px;
+        }
+        .card {
+            background:#fff; padding:35px 45px; border-radius:16px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.2); width:100%; max-width:780px;
+        }
+        h1 { text-align:center; color:#2193b0; margin-bottom:25px; font-size:26px; }
+        .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+        .full-width { grid-column: 1 / -1; }
+        .form-group { margin-bottom:2px; }
+        label { display:block; margin-bottom:6px; font-weight:600; color:#333; font-size:14px; }
+        input[type="text"], input[type="time"], input[type="number"], select, textarea {
+            width:100%; padding:11px; border:1px solid #ccc; border-radius:8px;
+            font-size:15px; outline:none; transition:border 0.2s; font-family:inherit;
+        }
+        input:focus, select:focus, textarea:focus { border-color:#2193b0; }
+        textarea { resize:vertical; min-height:44px; }
+        .icon-row { display:flex; gap:10px; }
+        .icon-option {
+            flex:1; text-align:center; padding:8px; border:2px solid #ccc; border-radius:8px;
+            cursor:pointer; font-size:20px; background:#f7f7f7;
+        }
+        .icon-option.selected { border-color:#2193b0; background:#e6f7fb; }
+        button {
+            width:100%; padding:13px; margin-top:20px; background:#2193b0; color:#fff;
+            border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer;
+        }
+        button:hover { background:#176a80; }
+        .back-link { display:block; text-align:center; margin-top:14px; color:#2193b0; text-decoration:none; font-size:14px; }
+        .back-link:hover { text-decoration:underline; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>💊 Add a New Medicine</h1>
+    <form th:action="@{/medicines/add}" th:object="${medicine}" method="post">
+        <div class="grid">
+            <div class="form-group full-width">
+                <label>Icon</label>
+                <div class="icon-row">
+                    <label class="icon-option"><input type="radio" th:field="*{icon}" value="💊" style="display:none">💊</label>
+                    <label class="icon-option"><input type="radio" th:field="*{icon}" value="🧴" style="display:none">🧴</label>
+                    <label class="icon-option"><input type="radio" th:field="*{icon}" value="💉" style="display:none">💉</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" th:field="*{name}" placeholder="e.g. Paracetamol" required>
+            </div>
+            <div class="form-group">
+                <label>Dosage</label>
+                <input type="text" th:field="*{dosage}" placeholder="e.g. 500mg" required>
+            </div>
+            <div class="form-group">
+                <label>Frequency</label>
+                <select th:field="*{frequency}">
+                    <option value="Once daily">Once daily</option>
+                    <option value="Twice daily">Twice daily</option>
+                    <option value="Three times daily">Three times daily</option>
+                    <option value="As needed">As needed</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Reminder Time</label>
+                <input type="time" th:field="*{reminderTime}" required>
+            </div>
+            <div class="form-group">
+                <label>Pills Remaining</label>
+                <input type="number" th:field="*{pillsRemaining}" placeholder="e.g. 30">
+            </div>
+            <div class="form-group full-width">
+                <label>Notes</label>
+                <textarea th:field="*{notes}" placeholder="e.g. Take after food"></textarea>
+            </div>
+        </div>
+        <button type="submit">Save Medicine</button>
+    </form>
+    <a href="/medicines" class="back-link">← Back to My Medicines</a>
+</div>
+<script>
+    document.querySelectorAll('.icon-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            document.querySelectorAll('.icon-option').forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+        });
+    });
+</script>
+</body>
+</html>

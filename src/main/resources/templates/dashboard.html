@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - MediTrack</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
+        body { background:#f4f9fb; color:#222; }
+
+        nav {
+            background: linear-gradient(135deg, #2193b0, #6dd5ed);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 40px; color: #fff;
+        }
+        nav .logo { font-size: 22px; font-weight: 700; }
+        nav .links a { color: #fff; text-decoration: none; margin-left: 28px; font-weight: 600; }
+        nav .links a:hover { text-decoration: underline; }
+
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        h1 { margin-bottom: 25px; color: #2193b0; }
+
+        .stats-row {
+            display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 35px;
+        }
+        .stat-box {
+            flex: 1; min-width: 200px; background: #fff; border-radius: 14px;
+            padding: 24px; text-align: center; box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        }
+        .stat-box .value { font-size: 32px; font-weight: 700; color: #2193b0; }
+        .stat-box .label { color: #666; font-size: 14px; margin-top: 6px; }
+
+        .med-summary {
+            background: #fff; border-radius: 14px; padding: 24px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        }
+        .med-summary h2 { color: #333; margin-bottom: 16px; font-size: 19px; }
+        .med-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0; border-bottom: 1px solid #eee;
+        }
+        .med-row:last-child { border-bottom: none; }
+        .med-name { font-weight: 600; }
+        .med-time { color: #888; font-size: 14px; }
+
+        .empty { text-align: center; color: #888; padding: 30px; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">💊 MediTrack</div>
+    <div class="links">
+        <a href="/">Home</a>
+        <a href="/medicines/dashboard">Dashboard</a>
+        <a href="/medicines/add">Add Medicine</a>
+        <a href="/medicines">My Medicines</a>
+        <a href="/medicines/history">History</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>📋 Dashboard</h1>
+
+    <div class="stats-row">
+        <div class="stat-box">
+            <div class="value" th:text="${totalMedicines}"></div>
+            <div class="label">Total Medicines</div>
+        </div>
+        <div class="stat-box">
+            <div class="value" th:text="${takenToday}"></div>
+            <div class="label">Taken Today</div>
+        </div>
+        <div class="stat-box">
+            <div class="value" th:text="${missedToday}"></div>
+            <div class="label">Missed Today</div>
+        </div>
+        <div class="stat-box">
+            <div class="value" th:text="${overallAdherence} + '%'"></div>
+            <div class="label">Overall Adherence</div>
+        </div>
+    </div>
+
+    <div class="med-summary">
+        <h2>Your Medicines</h2>
+        <div th:if="${#lists.isEmpty(medicines)}" class="empty">
+            No medicines yet. <a href="/medicines/add">Add one</a> to get started.
+        </div>
+        <div class="med-row" th:each="med : ${medicines}">
+            <span class="med-name" th:text="(${med.icon} ?: '💊') + ' ' + ${med.name}"></span>
+            <span class="med-time" th:text="'⏰ ' + ${med.reminderTime}"></span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

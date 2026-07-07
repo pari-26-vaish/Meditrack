@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Health History - MediTrack</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
+        body { background:#f4f9fb; color:#222; }
+
+        nav {
+            background: linear-gradient(135deg, #2193b0, #6dd5ed);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 40px; color: #fff;
+        }
+        nav .logo { font-size: 22px; font-weight: 700; }
+        nav .links a { color: #fff; text-decoration: none; margin-left: 28px; font-weight: 600; }
+        nav .links a:hover { text-decoration: underline; }
+
+        .container { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
+        h1 { margin-bottom: 8px; color: #2193b0; }
+        .subtitle { color: #666; margin-bottom: 28px; font-size: 14px; }
+
+        .stat-card {
+            background: #fff; border-radius: 14px; padding: 20px 24px; margin-bottom: 16px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        }
+        .stat-card .top-row {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+        }
+        .stat-card h3 { color: #222; font-size: 17px; }
+        .stat-card .percent { font-weight: 700; color: #2193b0; font-size: 16px; }
+
+        .bar-bg { background: #eee; border-radius: 10px; height: 14px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 10px; transition: width 0.4s ease; }
+        .bar-good { background: #2ecc71; }
+        .bar-mid { background: #f39c12; }
+        .bar-low { background: #e74c3c; }
+
+        .empty {
+            background: #fff; border-radius: 16px; padding: 50px 30px; text-align: center;
+            color: #888; box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        }
+
+        .history-link {
+            display: inline-block; margin-top: 20px; color: #2193b0;
+            text-decoration: none; font-weight: 600;
+        }
+        .history-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">💊 MediTrack</div>
+    <div class="links">
+        <a href="/">Home</a>
+        <a href="/medicines/dashboard">Dashboard</a>
+        <a href="/medicines/add">Add Medicine</a>
+        <a href="/medicines">My Medicines</a>
+        <a href="/medicines/history">History</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>📊 Health History</h1>
+    <p class="subtitle">Adherence percentage per medicine, based on Taken vs total logged doses.</p>
+
+    <div th:if="${#lists.isEmpty(medicines)}" class="empty">
+        No medicines to show yet. Add one and start tracking doses.
+    </div>
+
+    <div class="stat-card" th:each="med : ${medicines}">
+        <div class="top-row">
+            <h3 th:text="(${med.icon} ?: '💊') + ' ' + ${med.name}"></h3>
+            <span class="percent" th:text="${statsMap[med.name]} + '%'"></span>
+        </div>
+        <div class="bar-bg">
+            <div class="bar-fill"
+                 th:classappend="${statsMap[med.name] >= 80} ? 'bar-good' : (${statsMap[med.name] >= 50} ? 'bar-mid' : 'bar-low')"
+                 th:style="'width:' + ${statsMap[med.name]} + '%'"></div>
+        </div>
+    </div>
+
+    <a href="/medicines/history" class="history-link">🕒 View Full Dose Log →</a>
+</div>
+
+</body>
+</html>

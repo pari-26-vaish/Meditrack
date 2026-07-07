@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Medicines</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
+        body { background:#f4f9fb; color:#222; min-height:100vh; }
+
+        nav {
+            background: linear-gradient(135deg, #2193b0, #6dd5ed);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 40px; color: #fff;
+        }
+        nav .logo { font-size: 22px; font-weight: 700; }
+        nav .links a { color: #fff; text-decoration: none; margin-left: 28px; font-weight: 600; }
+        nav .links a:hover { text-decoration: underline; }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 8px; flex-wrap: wrap; gap: 14px;
+        }
+        .header h1 { color: #2193b0; font-size: 28px; }
+        .add-btn {
+            background: #2193b0; color: #fff; padding: 11px 20px; border-radius: 8px;
+            text-decoration: none; font-weight: 600; transition: background 0.2s;
+        }
+        .add-btn:hover { background: #176a80; }
+
+        .sub-row {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; flex-wrap: wrap; gap: 10px;
+        }
+        .count-text { color: #666; font-size: 14px; }
+        .stats-link { color: #2193b0; text-decoration: none; font-weight: 600; font-size: 14px; }
+        .stats-link:hover { text-decoration: underline; }
+
+        .empty-state {
+            background: #fff; border-radius: 16px; padding: 60px 30px; text-align: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        }
+        .empty-state .icon { font-size: 56px; margin-bottom: 16px; }
+        .empty-state h2 { color: #333; margin-bottom: 8px; font-size: 20px; }
+        .empty-state p { color: #888; margin-bottom: 22px; font-size: 14px; }
+        .empty-state a {
+            display: inline-block; background: #2193b0; color: #fff; padding: 12px 24px;
+            border-radius: 8px; text-decoration: none; font-weight: 600;
+        }
+        .empty-state a:hover { background: #176a80; }
+
+        .med-card {
+            background: #fff; border-radius: 14px; padding: 22px; margin-bottom: 16px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08); display: flex; gap: 18px; align-items: flex-start;
+        }
+        .med-icon {
+            font-size: 32px; background: #e6f7fb; width: 56px; height: 56px;
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink:0;
+        }
+        .med-info { flex: 1; }
+        .med-info h3 { color: #222; font-size: 19px; margin-bottom: 4px; }
+        .med-info p { color: #666; font-size: 14px; margin: 2px 0; }
+        .low-stock { color: #e74c3c; font-weight: 600; }
+        .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .btn { padding: 7px 12px; border-radius: 6px; border: none; font-size: 13px; cursor: pointer; font-weight: 600; }
+        .btn-taken { background: #2ecc71; color: #fff; }
+        .btn-missed { background: #e74c3c; color: #fff; }
+        .btn-skipped { background: #f39c12; color: #fff; }
+        .btn-edit { background: #3498db; color: #fff; text-decoration: none; display: inline-block; }
+        .btn-delete { background: #95a5a6; color: #fff; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">💊 MediTrack</div>
+    <div class="links">
+        <a href="/">Home</a>
+        <a href="/medicines/dashboard">Dashboard</a>
+        <a href="/medicines/add">Add Medicine</a>
+        <a href="/medicines">My Medicines</a>
+        <a href="/medicines/history">History</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="header">
+        <h1>My Medicines</h1>
+        <a href="/medicines/add" class="add-btn">+ Add Medicine</a>
+    </div>
+
+    <div class="sub-row">
+        <span class="count-text" th:text="${#lists.size(medicines)} + ' medicine(s) tracked'"></span>
+        <a href="/medicines/stats" class="stats-link">📊 View Health History →</a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(medicines)}" class="empty-state">
+        <div class="icon">💊</div>
+        <h2>No medicines added yet</h2>
+        <p>Start tracking your medications to never miss a dose.</p>
+        <a href="/medicines/add">+ Add Your First Medicine</a>
+    </div>
+
+    <div class="med-card" th:each="med : ${medicines}">
+        <div class="med-icon" th:text="${med.icon} ?: '💊'"></div>
+        <div class="med-info">
+            <h3 th:text="${med.name}"></h3>
+            <p th:text="${med.dosage} + ' — ' + ${med.frequency}"></p>
+            <p>⏰ <span th:text="${med.reminderTime}"></span></p>
+            <p th:if="${med.notes}" th:text="'📝 ' + ${med.notes}"></p>
+            <p th:if="${med.pillsRemaining != null}"
+               th:class="${med.pillsRemaining <= 5} ? 'low-stock' : ''"
+               th:text="'Pills left: ' + ${med.pillsRemaining}"></p>
+
+            <div class="actions">
+                <form th:action="@{/medicines/{id}/mark(id=${med.id})}" method="post" style="display:inline">
+                    <input type="hidden" name="status" value="TAKEN">
+                    <button class="btn btn-taken" type="submit">✔ Taken</button>
+                </form>
+                <form th:action="@{/medicines/{id}/mark(id=${med.id})}" method="post" style="display:inline">
+                    <input type="hidden" name="status" value="MISSED">
+                    <button class="btn btn-missed" type="submit">✘ Missed</button>
+                </form>
+                <form th:action="@{/medicines/{id}/mark(id=${med.id})}" method="post" style="display:inline">
+                    <input type="hidden" name="status" value="SKIPPED">
+                    <button class="btn btn-skipped" type="submit">⏭ Skipped</button>
+                </form>
+                <a th:href="@{/medicines/edit/{id}(id=${med.id})}" class="btn btn-edit">Edit</a>
+                <form th:action="@{/medicines/delete/{id}(id=${med.id})}" method="post" style="display:inline"
+                      onsubmit="return confirm('Delete this medicine?');">
+                    <button class="btn btn-delete" type="submit">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+        Notification.requestPermission();
+    }
+
+    const medicines = [
+        /*[# th:each="med : ${medicines}"]*/
+        {
+            name: /*[[${med.name}]]*/ "Medicine",
+            time: /*[[${#temporals.format(med.reminderTime, 'HH:mm')}]]*/ "08:00"
+        },
+        /*[/]*/
+    ];
+
+    console.log("Loaded medicines for reminders:", medicines);
+
+    const firedToday = {};
+
+    function playAlertSound() {
+        const audio = new Audio("https://cdn.freesound.org/previews/536/536108_11937282-lq.mp3");
+        audio.volume = 0.7;
+        audio.play().catch(err => console.log("Sound blocked until user interacts with page:", err));
+    }
+
+    function checkReminders() {
+        const now = new Date();
+        const currentTime = now.toTimeString().slice(0, 5);
+        const todayKey = now.toDateString();
+
+        medicines.forEach(med => {
+            if (med.time === currentTime) {
+                const fireKey = med.name + todayKey + med.time;
+                if (!firedToday[fireKey]) {
+                    firedToday[fireKey] = true;
+                    playAlertSound();
+                    if (Notification.permission === "granted") {
+                        new Notification("💊 MediTrack Reminder", {
+                            body: "Time to take: " + med.name,
+                            icon: "https://cdn-icons-png.flaticon.com/512/822/822143.png"
+                        });
+                    } else {
+                        alert("Time to take: " + med.name);
+                    }
+                }
+            }
+        });
+    }
+
+    setInterval(checkReminders, 15000);
+    checkReminders();
+</script>
+
+</body>
+</html>

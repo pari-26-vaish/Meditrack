@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Medicine</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
+        body { min-height:100vh; display:flex; align-items:center; justify-content:center;
+               background:linear-gradient(135deg,#6dd5ed,#2193b0); }
+        .card { background:#fff; padding:40px 35px; border-radius:16px;
+                box-shadow:0 10px 30px rgba(0,0,0,0.2); width:100%; max-width:420px; }
+        h1 { text-align:center; color:#2193b0; margin-bottom:25px; font-size:26px; }
+        .form-group { margin-bottom:16px; }
+        label { display:block; margin-bottom:6px; font-weight:600; color:#333; font-size:14px; }
+        input[type="text"], input[type="time"], input[type="number"], select, textarea {
+            width:100%; padding:12px; border:1px solid #ccc; border-radius:8px;
+            font-size:15px; outline:none; font-family:inherit;
+        }
+        textarea { resize:vertical; min-height:60px; }
+        button { width:100%; padding:13px; margin-top:10px; background:#2193b0; color:#fff;
+                 border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; }
+        button:hover { background:#176a80; }
+        .back-link { display:block; text-align:center; margin-top:18px; color:#2193b0; text-decoration:none; font-size:14px; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>✏️ Edit Medicine</h1>
+    <form th:action="@{/medicines/edit/{id}(id=${medicine.id})}" th:object="${medicine}" method="post">
+        <div class="form-group">
+            <label>Name</label>
+            <input type="text" th:field="*{name}" required>
+        </div>
+        <div class="form-group">
+            <label>Dosage</label>
+            <input type="text" th:field="*{dosage}" required>
+        </div>
+        <div class="form-group">
+            <label>Frequency</label>
+            <select th:field="*{frequency}">
+                <option value="Once daily">Once daily</option>
+                <option value="Twice daily">Twice daily</option>
+                <option value="Three times daily">Three times daily</option>
+                <option value="As needed">As needed</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Reminder Time</label>
+            <input type="time" th:field="*{reminderTime}" required>
+        </div>
+        <div class="form-group">
+            <label>Pills Remaining</label>
+            <input type="number" th:field="*{pillsRemaining}">
+        </div>
+        <div class="form-group">
+            <label>Notes</label>
+            <textarea th:field="*{notes}"></textarea>
+        </div>
+        <button type="submit">Update Medicine</button>
+    </form>
+    <a href="/medicines" class="back-link">← Back to My Medicines</a>
+</div>
+</body>
+</html>
