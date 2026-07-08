@@ -34,14 +34,4 @@ Mobile app version
 Doctor/caregiver dashboard
 
 📄 License ~
-This project is licensed under the MIT License.
-A couple quick things to nail down so the specifics are accurate:
-
-**Does Meditrack use a database, and which one?**
-- MySQL
-- PostgreSQL
-- No database / in-memory only
-- Other
-
-Let me know and I'll adjust that section — everything else you can fill in with real feature details as you build them out.
-
+This project is licensed under the MIT 
